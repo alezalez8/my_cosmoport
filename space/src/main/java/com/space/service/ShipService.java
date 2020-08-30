@@ -21,7 +21,7 @@ public class ShipService {
 
 
     @Autowired
-    ShipRepository repo;
+    ShipRepository shipRepository;
 
     public List<Ship> getAllShips(Map<String, String[]> params) {
         //List<Ship> ships = (List<Ship>) repo.findAll();
@@ -30,11 +30,10 @@ public class ShipService {
             pageSize = Integer.parseInt((params.get("pageSize")[0]));
             pageOffset = pageNumber * pageSize;
             orderField = params.get("order")[0].toLowerCase();
-            System.out.println("order = " + orderField);
-
         }
-        countOfShips = repo.count();
-        List<Ship> ships = (List<Ship>) repo.shipsForPage(pageSize, pageOffset, orderField);
+
+        countOfShips = shipRepository.count();
+        List<Ship> ships = (List<Ship>) shipRepository.shipsForPage(pageSize, pageOffset, orderField);
 
         return ships;
     }
