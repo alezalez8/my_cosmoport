@@ -18,11 +18,15 @@ public class ShipService {
     private int pageOffset = 0;
     private String orderField = "ID";
     private long countOfShips = 0;
-
+    private final ShipRepository shipRepository;
 
     @Autowired
-    ShipRepository shipRepository;
+    public ShipService(ShipRepository shipRepository) {
+        this.shipRepository = shipRepository;
+        countOfShips = shipRepository.count();
+    }
 
+    //============================================
     public List<Ship> getAllShips(Map<String, String[]> params) {
         //List<Ship> ships = (List<Ship>) repo.findAll();
         if (params.containsKey("pageNumber") && params.containsKey("pageSize")) {
@@ -37,9 +41,20 @@ public class ShipService {
 
         return ships;
     }
+    //==========================================================
+    /*public List<Ship> getAllShips() {
+        List<Ship> allShips = (List<Ship>) shipRepository.findAll();
+        countOfShips = shipRepository.count();
+        return allShips;
+    }*/
+
 
     public long getCountShips() {
         return countOfShips;
+    }
+
+    public void deleteById(Long id) {
+        shipRepository.deleteById(id);
     }
 
 }
