@@ -22,8 +22,7 @@ public class MyRestController {
     }
 
 
-
-//=======================================
+    //=======================================
     @GetMapping()
     //public List<Ship> getAllShips(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber) {
     public List<Ship> getAllShips(WebRequest webRequest) {
@@ -47,10 +46,9 @@ public class MyRestController {
         return shipService.getCountShips();
     }
 
-    @DeleteMapping("${id}")
-    //public void deleteShipById(@RequestParam (value = "ID") Long id ) {
-    public void deleteShipById(Long id ) {
-        System.out.println("Заход в метод удаления");
+    @DeleteMapping(value = "/{id}")
+    public void deleteShipById(@PathVariable(value = "id") Long id) {
+        // add check for id and exception
         shipService.deleteById(id);
     }
 
