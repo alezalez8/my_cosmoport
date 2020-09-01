@@ -3,8 +3,13 @@ package com.space.controller;
 import com.space.model.Ship;
 import com.space.service.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +19,6 @@ import java.util.Map;
 public class MyRestController {
 
     private final ShipService shipService;
-
 
     @Autowired
     public MyRestController(ShipService shipService) {
@@ -26,18 +30,17 @@ public class MyRestController {
     @GetMapping()
     //public List<Ship> getAllShips(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber) {
     public List<Ship> getAllShips(WebRequest webRequest) {
+
+        //Pageable pageable = PageRequest.of(int page, int size, Sort.by(org.springframework.data.domain.Sort.Order.asc(id)))
+
         Map<String, String[]> params = webRequest.getParameterMap();
         List<Ship> ships = shipService.getAllShips(params);
         return ships;
     }
 
 //===================================================================
-    /*@GetMapping()
-    public List<Ship> getAllShips(Model model) {
-        List<Ship>  allShips = shipService.getAllShips();
-        //model.addAttribute("ships", ships);
-        return allShips;
-    }*/
+
+
 
 
     @GetMapping("/count")
