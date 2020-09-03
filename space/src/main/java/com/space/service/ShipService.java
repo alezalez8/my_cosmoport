@@ -3,8 +3,6 @@ package com.space.service;
 
 import com.space.controller.ShipOrder;
 import com.space.model.Ship;
-import com.space.model.ShipType;
-import com.space.repository.OldShipRepository;
 import com.space.repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -63,6 +61,15 @@ public class ShipService {
 
     public void deleteById(Long id) {
         shipRepository.deleteById(id);
+    }
+
+    public void createNewShip(Ship ship){
+        ship.setRating(2.2);
+        shipRepository.save(ship);
+    }
+
+    public Ship getShipsById(Long id){
+        return  shipRepository.findById(id).get();
     }
 
 }

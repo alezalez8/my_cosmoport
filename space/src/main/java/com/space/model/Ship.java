@@ -1,8 +1,8 @@
 package com.space.model;
 
 import javax.persistence.*;
-import java.util.Calendar;
 import java.util.Date;
+
 
 @Entity
 @Table(name = "ship")
@@ -16,7 +16,7 @@ public class Ship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
+    //@Column(name = "name")
     private String name;
 
     private String planet;
@@ -92,7 +92,9 @@ public class Ship {
 
     public Double getRating() {
         return rating;
+
     }
+
 
     public void setRating(Double rating) {
         this.rating = rating;
