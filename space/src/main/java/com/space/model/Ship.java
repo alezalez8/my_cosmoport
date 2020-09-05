@@ -8,9 +8,6 @@ import java.util.Date;
 @Table(name = "ship")
 public class Ship {
 
-    @Enumerated(EnumType.STRING)
-    private ShipType shipType;
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +17,10 @@ public class Ship {
     private String name;
 
     private String planet;
+
+    @Enumerated(EnumType.STRING)
+    private ShipType shipType;
+
     private Date prodDate;
     private Boolean isUsed;
     private Double speed;
