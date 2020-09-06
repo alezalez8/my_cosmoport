@@ -41,7 +41,7 @@ public class MyRestController {
 
     @PostMapping(value = "/ships", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Ship createNewShip(@RequestBody Ship ship) {
-       return shipService.createNewShip(ship);
+        return shipService.createNewShip(ship);
 
     }
 
@@ -52,17 +52,17 @@ public class MyRestController {
         shipService.deleteById(id);
     }
 
-    //========================================== edit ==================
+    //========================================== get ship by ID  ==================
     @GetMapping(value = "/ships/{id}")
     public Ship getShipById(@PathVariable(value = "id") Long id) {
-        Ship ship1 = shipService.getShipsById(id);
-        System.out.println(ship1.getSpeed().toString());
-        System.out.println(ship1.getName().toString());
-        System.out.println(ship1.getCrewSize().toString());
-        System.out.println(ship1.getSpeed().toString());
+        Ship ship = shipService.getShipsById(id);
+        return shipService.getShipsById(id);
+    }
 
-        return ship1;
-
+    //========================================== edit get ==================
+    @PostMapping(value = "/ships/{id}")
+    public Ship editShips(@RequestBody Ship ship, @PathVariable(value = "id") Long id) {
+        return shipService.editShip(ship, id);
     }
 
 }

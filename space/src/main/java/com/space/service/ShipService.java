@@ -71,18 +71,13 @@ public class ShipService {
         if (ship.getUsed() == null) {
             ship.setUsed(false);
         }
-
-
-       /* Calendar calendar = Calendar.getInstance();
-        calendar.setTime(ship.getProdDate());*/
-
         ship.setRating(calculateRating(ship));
-
         return shipRepository.save(ship);
 
     }
 
-    //========================================= get ship by id =================================
+    //========================================= get ship by id ==========================
+
     public Ship getShipsById(Long id) {
         if (id <= 0) {
             throw new BadRequestException();
@@ -92,7 +87,21 @@ public class ShipService {
         return shipRepository.findById(id).get();
     }
 
-    //========================================= check param ====================================
+    //========================================= edit ship ==============================
+    public Ship editShip(Ship ship, Long id){
+        checkShipParamsOfBounds(ship);
+        if(!shipRepository.existsById(id)) {
+            //throw new ShipNotFoundException("No ship in BD");
+            throw new BadRequestException("No ship in BD");
+        }
+        ship.setId(id);
+        ship.setRating(calculateRating(ship));
+        checkShipParamsOfBounds(ship);
+        return shipRepository.saveAndFlush(ship);
+    }
+
+
+    //========================================= check param ============================
     private void checkShipParamsOfBounds(Ship ship) {
 
         if (ship.getName() != null && (ship.getName().length() < 1 || ship.getName().length() > 50))
@@ -115,7 +124,7 @@ public class ShipService {
         }
     }
 
-    //========================================= calcul rating ==================================
+    //========================================= calcul rating ==========================
     private Double calculateRating(Ship ship) {
 
         Calendar calendar = Calendar.getInstance();
@@ -127,7 +136,7 @@ public class ShipService {
         return raiting.doubleValue();
     }
 
-    //========================================= check id ==================================
+    //========================================= check id ==============================
     private Long checkIdValid(String id) {
         if (id == null || id.equals("") || id.equals("0"))
             throw new BadRequestException("Некорректный ID");
@@ -140,7 +149,7 @@ public class ShipService {
         }
     }
 
-    //=========================================== check id ==================
+    //=========================================== check id =============================
     private Boolean isIdValid(Long id) {
         if (id == null ||
                 id != Math.floor(id) ||
@@ -150,7 +159,7 @@ public class ShipService {
         return true;
     }
 
-    //=========================================== check params ==================
+    //=========================================== check params =========================
     private void checkShipParamsOfNull(Ship ship) {
         if (ship.getName() == null
                 || ship.getPlanet() == null
