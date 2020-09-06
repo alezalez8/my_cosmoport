@@ -97,16 +97,6 @@ public class ShipService {
         Long longId = checkIdValid(id);
         checkShipParamsOfBounds(ship);
 
-        /*if (!isIdValid(id)) {
-            throw new BadRequestException("No valid ID");
-        }*/
-       /* if (ship == null) {
-            throw new BadReque stException("No change");
-        }*/
-        /*if (!shipRepository.existsById(id)) {
-            throw new ShipNotFoundException("No ship in BD");
-        }*/
-        //--------------------
         if (!shipRepository.existsById(longId))
             throw new ShipNotFoundException("Ship not found");
 
@@ -132,9 +122,9 @@ public class ShipService {
 
         if (ship.getCrewSize() != null)
             editedShip.setCrewSize(ship.getCrewSize());
-        //----------------------
 
-        editedShip.setId(longId);
+
+        //editedShip.setId(longId);
 
 
         editedShip.setRating(calculateRating(editedShip));
