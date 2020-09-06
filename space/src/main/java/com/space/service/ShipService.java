@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +43,8 @@ public class ShipService {
             orderField = ShipOrder.valueOf(params.get("order")[0]).getFieldName();
         }
         Sort sort = Sort.by(orderField);
-        Page<Ship> shipsSearch = shipRepository.findAll(PageRequest.of(pageNumber, pageSize, sort));
+        Specification<Ship> filters = ShipSpecification.filters(params);
+        Page<Ship> shipsSearch = shipRepository.findAll(filters, PageRequest.of(pageNumber, pageSize, sort));
         List<Ship> ships = shipsSearch.getContent();
         countOfShips = shipsSearch.getTotalElements();
         return ships;
@@ -54,17 +56,18 @@ public class ShipService {
     }
 
     //========================================= delete ships ===================================
-    public void deleteById(Long id) {
-        if (!isIdValid(id)) {
+    public void deleteById(String id) {
+        Long longId = checkIdValid(id);
+        if (!isIdValid(longId)) {
             throw new BadRequestException();
         }
-        if (shipRepository.existsById(id)) {
-            shipRepository.deleteById(id);
+        if (shipRepository.existsById(longId)) {
+            shipRepository.deleteById(longId);
         } else throw new ShipNotFoundException("Ship not found");
     }
 
     //========================================= create ships ===================================
-    public Ship  createNewShip(Ship ship) {
+    public Ship createNewShip(Ship ship) {
         checkShipParamsOfNull(ship);
         checkShipParamsOfBounds(ship);
 
@@ -78,26 +81,65 @@ public class ShipService {
 
     //========================================= get ship by id ==========================
 
-    public Ship getShipsById(Long id) {
-        if (id <= 0) {
+    public Ship getShipsById(String id) {
+        Long longId = checkIdValid(id);
+        if (longId <= 0) {
             throw new BadRequestException();
         }
-        if (!shipRepository.existsById(id))
+        if (!shipRepository.existsById(longId))
             throw new ShipNotFoundException("Ship not found");
-        return shipRepository.findById(id).get();
+        return shipRepository.findById(longId).get();
     }
 
     //========================================= edit ship ==============================
-    public Ship editShip(Ship ship, Long id){
+    public Ship editShip(Ship ship, String id) {
+
+        Long longId = checkIdValid(id);
         checkShipParamsOfBounds(ship);
-        if(!shipRepository.existsById(id)) {
-            //throw new ShipNotFoundException("No ship in BD");
-            throw new BadRequestException("No ship in BD");
-        }
-        ship.setId(id);
-        ship.setRating(calculateRating(ship));
-        checkShipParamsOfBounds(ship);
-        return shipRepository.saveAndFlush(ship);
+
+        /*if (!isIdValid(id)) {
+            throw new BadRequestException("No valid ID");
+        }*/
+       /* if (ship == null) {
+            throw new BadReque stException("No change");
+        }*/
+        /*if (!shipRepository.existsById(id)) {
+            throw new ShipNotFoundException("No ship in BD");
+        }*/
+        //--------------------
+        if (!shipRepository.existsById(longId))
+            throw new ShipNotFoundException("Ship not found");
+
+        Ship editedShip = shipRepository.findById(longId).get();
+
+        if (ship.getName() != null)
+            editedShip.setName(ship.getName());
+
+        if (ship.getPlanet() != null)
+            editedShip.setPlanet(ship.getPlanet());
+
+        if (ship.getShipType() != null)
+            editedShip.setShipType(ship.getShipType());
+
+        if (ship.getProdDate() != null)
+            editedShip.setProdDate(ship.getProdDate());
+
+        if (ship.getSpeed() != null)
+            editedShip.setSpeed(ship.getSpeed());
+
+        if (ship.getUsed() != null)
+            editedShip.setUsed(ship.getUsed());
+
+        if (ship.getCrewSize() != null)
+            editedShip.setCrewSize(ship.getCrewSize());
+        //----------------------
+
+        editedShip.setId(longId);
+
+
+        editedShip.setRating(calculateRating(editedShip));
+
+        return shipRepository.saveAndFlush(editedShip);
     }
 
 
@@ -136,7 +178,7 @@ public class ShipService {
         return raiting.doubleValue();
     }
 
-    //========================================= check id ==============================
+    //========================================= check id String ==============================
     private Long checkIdValid(String id) {
         if (id == null || id.equals("") || id.equals("0"))
             throw new BadRequestException("Некорректный ID");
@@ -149,7 +191,7 @@ public class ShipService {
         }
     }
 
-    //=========================================== check id =============================
+    //=========================================== check id Long =============================
     private Boolean isIdValid(Long id) {
         if (id == null ||
                 id != Math.floor(id) ||

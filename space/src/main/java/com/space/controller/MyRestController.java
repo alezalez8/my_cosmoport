@@ -42,27 +42,26 @@ public class MyRestController {
     @PostMapping(value = "/ships", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Ship createNewShip(@RequestBody Ship ship) {
         return shipService.createNewShip(ship);
-
     }
 
     //============================================ delete ===================
-
     @DeleteMapping(value = "/ships/{id}")
-    public void deleteShipById(@PathVariable(value = "id") Long id) {
+    public void deleteShipById(@PathVariable(value = "id") String id) {
         shipService.deleteById(id);
     }
 
     //========================================== get ship by ID  ==================
     @GetMapping(value = "/ships/{id}")
-    public Ship getShipById(@PathVariable(value = "id") Long id) {
-        Ship ship = shipService.getShipsById(id);
+    public Ship getShipById(@PathVariable(value = "id") String id) {
+        //Ship ship = shipService.getShipsById(id);
         return shipService.getShipsById(id);
     }
 
-    //========================================== edit get ==================
+    //========================================== edit ship ==================
     @PostMapping(value = "/ships/{id}")
-    public Ship editShips(@RequestBody Ship ship, @PathVariable(value = "id") Long id) {
+    public Ship editShips(@RequestBody Ship ship, @PathVariable(value = "id") String id) {
         return shipService.editShip(ship, id);
     }
+
 
 }

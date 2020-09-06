@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 
 public interface ShipRepository extends JpaRepository<Ship, Long>, JpaSpecificationExecutor<Ship> {}
-//public interface ShipRepository extends PagingAndSortingRepository<Ship, Long>, JpaSpecificationExecutor<Ship> {}
 
 
