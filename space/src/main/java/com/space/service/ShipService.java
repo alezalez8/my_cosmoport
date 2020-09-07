@@ -23,9 +23,14 @@ import java.util.Map;
 @Service
 @Transactional
 public class ShipService {
-    private int pageNumber = 0;
-    private int pageSize = 3;
-    private String orderField = "id";
+    private final int DEFAULT_PAGE_NUMBER = 0;
+    private final int DEFAULT_PAGE_SIZE = 3;
+    private final String DEFAULT_ORDER_FIELD = "id";
+    //private final long DEFAULT_COUNT_OF_SHIPS = 0;
+
+    private int pageNumber;
+    private int pageSize;
+    private String orderField;
     private long countOfShips = 0;
     private final ShipRepository shipRepository;
 
@@ -37,11 +42,29 @@ public class ShipService {
 
     //========================================= get all ships ===================================
     public List<Ship> getAllShips(Map<String, String[]> params) {
-        if (params.containsKey("pageNumber") && params.containsKey("pageSize")) {
-            pageNumber = Integer.parseInt((params.get("pageNumber")[0]));
-            pageSize = Integer.parseInt((params.get("pageSize")[0]));
+        /*if (params.containsKey("pageNumber") && params.containsKey("pageSize")) {
+            pageNumber = Integer.parseInt(params.get("pageNumber")[0]);
+            pageSize = Integer.parseInt(params.get("pageSize")[0]);
             orderField = ShipOrder.valueOf(params.get("order")[0]).getFieldName();
+        }*/
+        if (params.containsKey("pageNumber")) {
+            pageNumber = Integer.parseInt(params.get("pageNumber")[0]);
+        } else {
+            pageNumber = DEFAULT_PAGE_NUMBER;
         }
+
+        if (params.containsKey("pageSize")) {
+            pageSize = Integer.parseInt(params.get("pageSize")[0]);
+        }  else {
+            pageSize = DEFAULT_PAGE_SIZE;
+        }
+
+        if (params.containsKey("order")) {
+            orderField = ShipOrder.valueOf(params.get("order")[0]).getFieldName();
+        } else {
+            orderField = DEFAULT_ORDER_FIELD;
+        }
+
         Sort sort = Sort.by(orderField);
         Specification<Ship> filters = ShipSpecification.filters(params);
         Page<Ship> shipsSearch = shipRepository.findAll(filters, PageRequest.of(pageNumber, pageSize, sort));

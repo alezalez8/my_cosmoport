@@ -32,10 +32,10 @@ public class MyRestController {
     }
     //======================================== get count ===================
 
-    @GetMapping("/ships/count")
+   /* @GetMapping("/ships/count")
     public long getCountShips() {
         return shipService.getCountShips();
-    }
+    }*/
 
     //========================================= create =====================
 
@@ -61,6 +61,16 @@ public class MyRestController {
     @PostMapping(value = "/ships/{id}")
     public Ship editShips(@RequestBody Ship ship, @PathVariable(value = "id") String id) {
         return shipService.editShip(ship, id);
+    }
+
+    //======================================= get count =====================
+    @GetMapping("/ships/count")
+    public Long getShipsCount(WebRequest webRequest) {
+
+        Map<String, String[]> params = webRequest.getParameterMap();
+        shipService.getAllShips(params);
+
+        return shipService.getCountShips();
     }
 
 

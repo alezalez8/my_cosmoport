@@ -1,6 +1,7 @@
 package com.space.service;
 
 import com.space.model.Ship;
+import com.space.model.ShipType;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -20,14 +21,17 @@ public class ShipSpecification {
                         and(searchByPlanet(params.get("planet")).
                                 and(shipsByShipType(params.get("shipType")))
                                 .and(shipsByUsage(params.get("isUsed")))
+                                .and(shipsByDate(params.get("after"), params.get("before")))
+                                .and(shipsByShipType(params.get("shipType")))
+                                .and(shipsByCrewSize(params.get("minCrewSize"), params.get("maxCrewSize")))
+                                .and(shipsBySpeed(params.get("minSpeed"), params.get("maxSpeed")))
+                                .and(shipsByRating(params.get("minRating"), params.get("maxRating")))
                         )
         );
 
-    }  //.    .and(shipsByDate(params.get("after",))
+    }
 
     //=============================================== search by Name ====================================
-
-
     public static Specification<Ship> searchByName(String[] name) {
         return new Specification<Ship>() {
             @Override
@@ -38,7 +42,6 @@ public class ShipSpecification {
     }
 
     //=============================================== search by Planet ==================================
-
     public static Specification<Ship> searchByPlanet(String[] planet) {
         return new Specification<Ship>() {
             @Override
@@ -49,31 +52,25 @@ public class ShipSpecification {
     }
 
     //=============================================== search by Date ====================================
-    public static Specification<Ship> shipsByDate(String[] afterIn, String[] beforeIn) {
-        String afte = afterIn[0];
-        Long after = Long.parseLong(afte);
-        String befo = beforeIn[0];
-        Long before = Long.parseLong(befo);
+    public static Specification<Ship> shipsByDate(String[] after, String[] before) {
+
         return (r, q, cb) -> {
             if (after == null && before == null) return null;
             if (after == null) {
 
-                Date before1 = new Date(before);
+                Date before1 = new Date(Long.parseLong(before[0]));
                 return cb.lessThanOrEqualTo(r.get("prodDate"), before1);
             }
             if (before == null) {
-                Date after1 = new Date(after);
+                Date after1 = new Date(Long.parseLong(after[0]));
                 return cb.greaterThanOrEqualTo(r.get("prodDate"), after1);
             }
-            Date before1 = new Date(before);
-            Date after1 = new Date(after);
-            return cb.between(r.get("prodDate"), after, before);
+            Date before1 = new Date(Long.parseLong(before[0]));
+            Date after1 = new Date(Long.parseLong(after[0]));
+            return cb.between(r.get("prodDate"), after1, before1);
         };
     }
 
-    //=============================================== search by crew ====================================
-    //=============================================== search by speed ===================================
-    //=============================================== search by rating ==================================
     //=============================================== search by isUsed ==================================
     public static Specification<Ship> shipsByUsage(String[] isUsed) {
         return (r, q, cb) -> {
@@ -84,22 +81,43 @@ public class ShipSpecification {
         };
     }
 
-    /*public static Specification<Ship> shipsByRating(Double min, Double max) {
+    //=============================================== search by crew ====================================
+    public static Specification<Ship> shipsByCrewSize(String[] min, String[] max) {
+        return (root, query, cb) -> {
+            if (min == null && max == null) return null;
+            if (min == null)                return cb.lessThanOrEqualTo(root.get("crewSize"), Integer.parseInt(max[0]));
+            if (max == null)                return cb.greaterThanOrEqualTo(root.get("crewSize"), Integer.parseInt(min[0]));
+            return cb.between(root.get("crewSize"), Integer.parseInt(min[0]), Integer.parseInt(max[0]));
+        };
+    }
+
+    //=============================================== search by speed ===================================
+    public static Specification<Ship> shipsBySpeed(String[] min, String[] max) {
         return (r, q, cb) -> {
             if (min == null && max == null) return null;
-            if (min == null)                return cb.lessThanOrEqualTo(r.get("rating"), max);
-            if (max == null)                return cb.greaterThanOrEqualTo(r.get("rating"), min);
-            return cb.between(r.get("rating"), min, max);
+            if (min == null)                return cb.lessThanOrEqualTo(r.get("speed"), Double.parseDouble(max[0]));
+            if (max == null)                return cb.greaterThanOrEqualTo(r.get("speed"), Double.parseDouble(min[0]));
+            return cb.between(r.get("speed"), Double.parseDouble(min[0]), Double.parseDouble(max[0]));
         };
-    }*/
+    }
+
+    //=============================================== search by rating ==================================
+
+
+    public static Specification<Ship> shipsByRating(String[] min, String[] max) {
+        return (r, q, cb) -> {
+            if (min == null && max == null) return null;
+            if (min == null)                return cb.lessThanOrEqualTo(r.get("rating"), Double.parseDouble(max[0]));
+            if (max == null)                return cb.greaterThanOrEqualTo(r.get("rating"), Double.parseDouble(min[0]));
+            return cb.between(r.get("rating"), Double.parseDouble(min[0]), Double.parseDouble(max[0]));
+        };
+    }
     //=============================================== search by ship type ===============================
     public static Specification<Ship> shipsByShipType(String[] shipType) {
-        //System.out.println("shiptype" + shipType[0].toString());
         return new Specification<Ship>() {
             @Override
             public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                // if(shipType != null){System.out.println("shiptype  " + shipType[0].toString());}
-                return shipType == null ? null : criteriaBuilder.like(root.get("shipType"), shipType[0].toUpperCase());
+                return shipType == null ? null : criteriaBuilder.equal(root.get("shipType"), ShipType.valueOf(shipType[0]));
             }
         };
 
